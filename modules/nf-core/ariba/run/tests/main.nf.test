@@ -41,25 +41,13 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert snapshot(file(process.out.results[0][1][0]).name).match("assembled_genes.fa.gz") },
-                { assert snapshot(file(process.out.results[0][1][1]).name).match("assembled_seqs.fa.gz") },
-                { assert snapshot(file(process.out.results[0][1][2]).name).match("assemblies.fa.gz") },
-                { assert snapshot(file(process.out.results[0][1][3]).name).match("debug.report.tsv") },
-                { assert snapshot(file(process.out.results[0][1][4]).name).match("report.tsv") },
-                { assert snapshot(file(process.out.results[0][1][5]).name).match("version_info.txt") },
-                { assert path(process.out.results[0][1][3]).getText().contains("ariba_ref_name") },
-                { assert path(process.out.results[0][1][3]).getText().contains("reads") },
-                { assert path(process.out.results[0][1][3]).getText().contains("free_text") },
-                { assert path(process.out.results[0][1][3]).getText().contains("known_var_change") },
-                { assert path(process.out.results[0][1][4]).getText().contains("ariba_ref_name") },
-                { assert path(process.out.results[0][1][4]).getText().contains("reads") },
-                { assert path(process.out.results[0][1][4]).getText().contains("free_text") },
-                { assert path(process.out.results[0][1][4]).getText().contains("known_var_change") },
-                { assert path(process.out.results[0][1][5]).getText().contains("ARIBA") },
-                { assert path(process.out.results[0][1][5]).getText().contains("Python") },
-                { assert path(process.out.results[0][1][5]).getText().contains("OK") },
-                { assert path(process.out.results[0][1][5]).getText().contains("True") },
-                { assert snapshot(process.out.findAll { key, val -> key.startsWith('versions') }).match("versions") }
+                { assert snapshot(
+                    path(process.out.results[0][1][3]).readLines()[0],
+                    path(process.out.results[0][1][4]).readLines()[0],
+                    path(process.out.results[0][1][5]).readLines()[0],
+                    process.out.results[0][1].collect{ file_path -> file(file_path).name }.sort(),
+                    process.out.findAll { key, val -> key.startsWith('versions') }
+                ).match() }
             )
         }
 
